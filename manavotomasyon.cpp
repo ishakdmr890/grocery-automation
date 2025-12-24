@@ -16,6 +16,7 @@ void Arama(string urunlerad[], string urunler[], int sayac);
 void Listeleme(string urunler[], int sayac);
 void Silme(string urunlerad[], string urunler[], float fiyat[], float kilo[], int& sayac);
 void SatisYap(string urunlerad[],string urunler[], float fiyat[], float kilo[], int sayac);
+void Kaydetme(string urunler[],int sayac);
 
 int main(){
     string urunlerad[100],urunler[100];
@@ -61,6 +62,18 @@ int main(){
     return 0;
 }
 
+void Kaydetme(string urunler[],int sayac){
+    ofstream yiyecekler("yiyecekler.dat");
+    if (yiyecekler.is_open())
+    {
+        for (int i = 0; i < sayac; i++)
+        {
+            yiyecekler<<urunler[i]<<endl;
+        }
+        yiyecekler.close();
+    }
+}
+
 void Ekleme(string urunlerad[], string urunler[], float fiyat[], float kilo[], int& sayac){
     system("cls");
     string urunAdi;
@@ -84,6 +97,7 @@ void Ekleme(string urunlerad[], string urunler[], float fiyat[], float kilo[], i
     ss << fixed << setprecision(2)<< urunlerad[sayac]   << " : "<<fiyat[sayac]<< " (TL/KG) : "<<kilo[sayac]<< " Kilo.";
     urunler[sayac] = ss.str();
     sayac++;
+    Kaydetme(urunler, sayac);
     system("cls");
 }
 
@@ -106,7 +120,6 @@ void Arama(string urunlerad[], string urunler[], int sayac){
     if (!bulundu) {
         cout << "Boyle bir urun yok.\n";
     }
-
 }
 
 void Listeleme(string urunler[], int sayac){
@@ -121,17 +134,7 @@ void Listeleme(string urunler[], int sayac){
     {
         cout<<urunler[i]<<endl;
     }
-    
-    ofstream yiyecekler("yiyecekler.dat");
-    if (yiyecekler.is_open())
-    {
-        for (int i = 0; i < sayac; i++)
-        {
-            yiyecekler<<urunler[i]<<endl;
-        }
-        yiyecekler.close();
-    }
-    
+    Kaydetme(urunler, sayac);
 }
 
 void Silme(string urunlerad[], string urunler[], float fiyat[], float kilo[], int& sayac){
@@ -159,6 +162,7 @@ void Silme(string urunlerad[], string urunler[], float fiyat[], float kilo[], in
     if (!bulundu) {
         cout << "Boyle bir urun bulunamadi.\n";
     }
+    Kaydetme(urunler, sayac);
 }
 
 void SatisYap(string urunlerad[], string urunler[],float fiyat[], float kilo[], int sayac)
@@ -167,20 +171,16 @@ void SatisYap(string urunlerad[], string urunler[],float fiyat[], float kilo[], 
     string secilen;
     float satilanKilo;
     bool bulundu = false;
-
     if (sayac == 0) {
         cout << "Urun yok!" << endl;
         return;
     }
-
     cout << endl << "--- URUNLER ---" << endl;
     for (int i = 0; i < sayac; i++) {
         cout << urunler[i] << endl;
     }
-
     cout << endl << "Satilacak urun adi: ";
     cin >> secilen;
-
     for (int i = 0; i < sayac; i++) {
         if (urunlerad[i] == secilen) {
             bulundu = true;
@@ -198,25 +198,17 @@ void SatisYap(string urunlerad[], string urunler[],float fiyat[], float kilo[], 
                      << kilo[i] << " KG" << endl;
                 return;
             }
-
             float tutar = satilanKilo * fiyat[i];
             kilo[i] -= satilanKilo;
-
-            cout << fixed << setprecision(2);
-            cout << "Satis basarili! Tutar: "
-                 << tutar << " TL" << endl;
-
-            stringstream ss;     //Floatı stringe yazmak için...
-            ss << fixed << setprecision(2)
-               << urunlerad[i] << " : "
-               << fiyat[i] << " TL/KG : "
-               << kilo[i] << " KG (KALAN)";
-
+            stringstream ss;
+            ss << fixed << setprecision(2)<< urunlerad[i] << " : "<< fiyat[i] << " TL/KG : "<< kilo[i] << " KG (KALAN)";
             urunler[i] = ss.str();
+            Kaydetme(urunler, sayac);
+            cout << fixed << setprecision(2);
+            cout << "Satis basarili! Tutar: "<< tutar << " TL" << endl;
             return;
         }
     }
-
     if (!bulundu) {
         cout << "Urun bulunamadi!" << endl;
     }
